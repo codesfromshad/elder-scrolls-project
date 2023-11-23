@@ -1,10 +1,11 @@
 import { Input } from '@/components/ui/input'
 import Image from 'next/image'
 import Search from './ui/search'
-import { Skeleton } from '@/components/ui/skeleton'
+import { InfiniteLoader, List } from 'react-virtualized';
 
 import { fetchCards } from '@/lib/data'
 import CharacterCard from './ui/character-card'
+import InfiniteCharacterCards from './ui/infinite-character-cards';
 
 export default async function Home({
   searchParams,
@@ -17,16 +18,14 @@ export default async function Home({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const { cards } = await fetchCards(query, currentPage);
+  const { data: { cards } } = await fetchCards(query, currentPage);
 
   return (
-    <main className="p-3 space-y-4">
-      <Search className="" placeholder="Search..." />
-      <section className="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-x-3 gap-y-3">
-        {cards?.map((card: any) => (
-          <CharacterCard key={card.id} card={card} />
-        ))}
-      </section>
+    <main>
+      <div className="sticky top-0 w-full bg-white p-3 shadow-md">
+        <Search placeholder="Search..." />
+      </div>
+      <InfiniteCharacterCards cards={cards} searchParams={searchParams} currentPage={currentPage} />
     </main>
   )
 }
